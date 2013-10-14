@@ -4,9 +4,18 @@
 #       [MCU avr_mcu_name]
 #       [FCPU cpu_frequency]
 #       [SRCS src1 src2 .. srcN]
-#       [LIBS lib1 lib2 .. libN]
+#       [LIBS lib1 lib2 .. libN]        # optional
 #   )
 #==============================================================================
+# generate_avr_library(
+#       library_name
+#       [MCU avr_mcu_name]
+#       [FCPU cpu_frequency]
+#       [SRCS src1 src2 .. srcN]
+#       [LIBS lib1 lib2 .. libN]        # optional
+#   )
+#==============================================================================
+
 cmake_minimum_required(VERSION 2.8.5)
 include(CMakeParseArguments)
 
