@@ -1,7 +1,7 @@
 #include <inttypes.h>
 
 #include <avr/io.h>
-
+#include "test_lib.h"
 
 int main(void)
 {
@@ -11,6 +11,7 @@ int main(void)
 
     while (1)
     {
+        test_func();
     }
 
 	return 0;

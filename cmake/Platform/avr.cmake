@@ -10,15 +10,15 @@
 cmake_minimum_required(VERSION 2.8.5)
 include(CMakeParseArguments)
 
+macro(GENERATE_PARSE_ARGUMENTS ARGUMENTS)
 
-function(GENERATE_AVR_FIRMWARE INPUT_NAME)
-    message(STATUS "Generating ${INPUT_NAME}")
+    message(STATUS "Parsing arguments: ${ARGUMENTS}")
 
     cmake_parse_arguments(INPUT             # prefix
                           ""                # Options 
                           "MCU;FCPU"        # One value keywords 
                           "SRCS;LIBS"       # Multi Value Keywords
-                          ${ARGN}           # Arguments to parse
+                          ${ARGUMENTS}           # Arguments to parse
                           )
 
     message(STATUS "MCU: ${INPUT_MCU}")
@@ -39,7 +39,19 @@ function(GENERATE_AVR_FIRMWARE INPUT_NAME)
         message(FATAL_ERROR "SRCS not set")
     endif()
 
+endmacro()
+
+function(GENERATE_AVR_FIRMWARE INPUT_NAME)
+    message(STATUS "Generating AVR firmware ${INPUT_NAME}")
+
+    generate_parse_arguments("${ARGN}") 
+    
     add_executable(${INPUT_NAME} ${INPUT_SRCS})
+
+    if(INPUT_LIBS)
+        message(STATUS "Linking libraries: ${INPUT_LIBS}")
+        target_link_libraries(${INPUT_NAME} ${INPUT_LIBS})
+    endif()
 
     set_target_properties(${INPUT_NAME} PROPERTIES
         COMPILE_FLAGS "-mmcu=${INPUT_MCU} -DF_CPU=${INPUT_FCPU}")
@@ -47,8 +59,22 @@ function(GENERATE_AVR_FIRMWARE INPUT_NAME)
     setup_programmer(${INPUT_MCU})
 endfunction()
 
+function(GENERATE_AVR_LIBRARY INPUT_NAME)
+    message(STATUS "Generating AVR library ${INPUT_NAME}")
+      
+    generate_parse_arguments("${ARGN}") 
 
+    add_library(${INPUT_NAME} STATIC ${INPUT_SRCS})
 
+    if(INPUT_LIBS)
+        message(STATUS "Linking libraries: ${INPUT_LIBS}")
+        target_link_libraries(${INPUT_NAME} ${INPUT_LIBS})
+    endif()
+
+    set_target_properties(${INPUT_NAME} PROPERTIES
+        COMPILE_FLAGS "-mmcu=${INPUT_MCU} -DF_CPU=${INPUT_FCPU}")
+
+endfunction()
 
 function(SETUP_PROGRAMMER MCU_NAME)
     find_program(AVRDUDE avrdude)
