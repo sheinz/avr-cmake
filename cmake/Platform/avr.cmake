@@ -19,6 +19,10 @@
 cmake_minimum_required(VERSION 2.8.5)
 include(CMakeParseArguments)
 
+SET(AVR_COMPILE_FLAGS "-Os -std=gnu99 -Wall -Wstrict-prototypes -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums")
+SET(AVR_LINK_FLAGS "-lm")
+
+
 macro(GENERATE_PARSE_ARGUMENTS ARGUMENTS)
 
     message(STATUS "Parsing arguments: ${ARGUMENTS}")
@@ -61,9 +65,12 @@ function(GENERATE_AVR_FIRMWARE INPUT_NAME)
         message(STATUS "Linking libraries: ${INPUT_LIBS}")
         target_link_libraries(${INPUT_NAME} ${INPUT_LIBS})
     endif()
-
+    
     set_target_properties(${INPUT_NAME} PROPERTIES
-        COMPILE_FLAGS "-mmcu=${INPUT_MCU} -DF_CPU=${INPUT_FCPU}")
+        COMPILE_FLAGS "${AVR_COMPILE_FLAGS} -mmcu=${INPUT_MCU} -DF_CPU=${INPUT_FCPU}")
+        
+    set_target_properties(${INPUT_NAME} PROPERTIES
+        LINK_FLAGS "${AVR_COMPILE_FLAGS} ${AVR_LINK_FLAGS} -mmcu=${INPUT_MCU} -DF_CPU=${INPUT_FCPU}")
 
     setup_programmer(${INPUT_MCU})
 endfunction()
@@ -81,7 +88,7 @@ function(GENERATE_AVR_LIBRARY INPUT_NAME)
     endif()
 
     set_target_properties(${INPUT_NAME} PROPERTIES
-        COMPILE_FLAGS "-mmcu=${INPUT_MCU} -DF_CPU=${INPUT_FCPU}")
+        COMPILE_FLAGS "${AVR_COMPILE_FLAGS} -mmcu=${INPUT_MCU} -DF_CPU=${INPUT_FCPU}")
 
 endfunction()
 
